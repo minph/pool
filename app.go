@@ -33,8 +33,8 @@ func New(routine int) *App {
 	}
 }
 
-// do 执行协程运行时函数
-func (a *App) do(doFunc RunFunc) {
+// useFunc 执行协程运行时函数
+func (a *App) useFunc(doFunc RunFunc) {
 	for i := 0; i < a.Routine; i++ {
 		go func(index int) {
 			if doFunc != nil {
@@ -88,7 +88,7 @@ func (a *App) Run(doFunc RunFunc) *App {
 	}
 
 	// 开启协程
-	go a.do(doFunc)
+	go a.useFunc(doFunc)
 
 	// 检测所有协程是否结束
 	for {
@@ -117,4 +117,14 @@ func (a *App) Run(doFunc RunFunc) *App {
 	}
 
 	return a
+}
+
+// Do 封装后直接运行协程
+func (a *App) Do(runFunc RunFunc, waitFunc AppFunc) *App {
+	go a.Run(runFunc)
+	for !a.Done() {
+		waitFunc(a)
+	}
+	return a
+
 }

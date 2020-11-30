@@ -6,7 +6,7 @@
 
 # 示例
 
-``` go
+```go
 package main
 
 import (
@@ -16,8 +16,8 @@ import (
 )
 
 func main() {
+  
 	p := pool.New(10)
-
 	data := make(chan string)
 
 	go p.Run(func(app *pool.App, index int) {
@@ -34,6 +34,34 @@ func main() {
 
 ```
 
+也可以使用封装程度更高的 API
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/minph/pool"
+)
+
+func main() {
+
+	p := pool.New(10)
+	data := make(chan string)
+
+	p.Do(func(app *pool.App, index int) {
+
+		msg := fmt.Sprintf("这是协程%v", index)
+		data <- msg
+	}, func(app *pool.App) {
+		msg := <-data
+		fmt.Println(msg)
+	})
+}
+
+```
+
 # 概览
 
 - [type App](#App)
@@ -41,6 +69,7 @@ func main() {
   - [func (a *App) After(afterFunc AppFunc) *App](#App.After)
   - [func (a *App) Before(beforeFunc AppFunc) *App](#App.Before)
   - [func (a \*App) Counter() int](#App.Counter)
+  - [func (a *App) Do(runFunc RunFunc, waitFunc AppFunc) *App](#App.Do)
   - [func (a \*App) Done() bool](#App.Done)
   - [func (a *App) OnceDone(onceDoneFunc AppFunc) *App](#App.OnceDone)
   - [func (a *App) Run(doFunc RunFunc) *App](#App.Run)
@@ -50,8 +79,6 @@ func main() {
 - [type RunFunc](#RunFunc)
 
 # 详情
-
-## <a name="App">type</a> App
 
 ```go
 type App struct {
@@ -95,6 +122,14 @@ func (a *App) Counter() int
 ```
 
 Counter 获取剩余协程数
+
+### <a name="App.Do">func</a> (\*App) Do
+
+```go
+func (a *App) Do(runFunc RunFunc, waitFunc AppFunc) *App
+```
+
+Do 封装后直接运行协程
 
 ### <a name="App.Done">func</a> (\*App) Done
 
