@@ -47,6 +47,7 @@ func (a *App) SetTask(from, to int) *App {
 }
 
 // Task 获取子任务区间
-func (a *App) Task(index int) [2]int {
-	return distribute(a.task[0], a.task[1], a.Routine)[index]
+func (a *App) Task(index int) (int, int) {
+	result := distribute(a.task[0], a.task[1], a.Routine)[index]
+	return result[0], result[1]
 }
