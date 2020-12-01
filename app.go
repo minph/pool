@@ -79,8 +79,8 @@ func (a *App) Done() bool {
 	return a.counter == 0
 }
 
-// Run 协程调度
-func (a *App) Run(doFunc RunFunc) *App {
+// Start 开启协程
+func (a *App) Start(doFunc RunFunc) *App {
 
 	// 开始时机函数
 	if a.beforeFunc != nil {
@@ -119,9 +119,9 @@ func (a *App) Run(doFunc RunFunc) *App {
 	return a
 }
 
-// Do 封装后直接运行协程
-func (a *App) Do(runFunc RunFunc, waitFunc AppFunc) *App {
-	go a.Run(runFunc)
+// Run 运行协程
+func (a *App) Run(runFunc RunFunc, waitFunc AppFunc) *App {
+	go a.Start(runFunc)
 	for !a.Done() {
 		waitFunc(a)
 	}

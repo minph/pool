@@ -11,17 +11,15 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/minph/pool"
 )
 
 func main() {
-  
+
 	p := pool.New(10)
 	data := make(chan string)
 
-	go p.Run(func(app *pool.App, index int) {
-
+	go p.Start(func(app *pool.App, index int) {
 		msg := fmt.Sprintf("这是协程%v", index)
 		data <- msg
 	})
@@ -41,7 +39,6 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/minph/pool"
 )
 
@@ -50,8 +47,7 @@ func main() {
 	p := pool.New(10)
 	data := make(chan string)
 
-	p.Do(func(app *pool.App, index int) {
-
+	p.Run(func(app *pool.App, index int) {
 		msg := fmt.Sprintf("这是协程%v", index)
 		data <- msg
 	}, func(app *pool.App) {
@@ -69,16 +65,18 @@ func main() {
   - [func (a *App) After(afterFunc AppFunc) *App](#App.After)
   - [func (a *App) Before(beforeFunc AppFunc) *App](#App.Before)
   - [func (a \*App) Counter() int](#App.Counter)
-  - [func (a *App) Do(runFunc RunFunc, waitFunc AppFunc) *App](#App.Do)
   - [func (a \*App) Done() bool](#App.Done)
   - [func (a *App) OnceDone(onceDoneFunc AppFunc) *App](#App.OnceDone)
-  - [func (a *App) Run(doFunc RunFunc) *App](#App.Run)
+  - [func (a *App) Run(runFunc RunFunc, waitFunc AppFunc) *App](#App.Run)
   - [func (a *App) SetTask(from, to int) *App](#App.SetTask)
+  - [func (a *App) Start(doFunc RunFunc) *App](#App.Start)
   - [func (a \*App) Task(index int) (int, int)](#App.Task)
 - [type AppFunc](#AppFunc)
 - [type RunFunc](#RunFunc)
 
 # 详情
+
+## <a name="App">type</a> App
 
 ```go
 type App struct {
@@ -123,14 +121,6 @@ func (a *App) Counter() int
 
 Counter 获取剩余协程数
 
-### <a name="App.Do">func</a> (\*App) Do
-
-```go
-func (a *App) Do(runFunc RunFunc, waitFunc AppFunc) *App
-```
-
-Do 封装后直接运行协程
-
 ### <a name="App.Done">func</a> (\*App) Done
 
 ```go
@@ -150,10 +140,10 @@ OnceDone 设置任一协程结束时触发函数
 ### <a name="App.Run">func</a> (\*App) Run
 
 ```go
-func (a *App) Run(doFunc RunFunc) *App
+func (a *App) Run(runFunc RunFunc, waitFunc AppFunc) *App
 ```
 
-Run 协程调度
+Run 运行协程
 
 ### <a name="App.SetTask">func</a> (\*App) SetTask
 
@@ -162,6 +152,14 @@ func (a *App) SetTask(from, to int) *App
 ```
 
 SetTask 设置任务区间
+
+### <a name="App.Start">func</a> (\*App) Start
+
+```go
+func (a *App) Start(doFunc RunFunc) *App
+```
+
+Start 开启协程
 
 ### <a name="App.Task">func</a> (\*App) Task
 
